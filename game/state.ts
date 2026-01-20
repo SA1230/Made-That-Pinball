@@ -12,9 +12,9 @@ import { Vec2, add, clamp, distance, normalize, scale, sub } from "./physics/vec
 
 const TABLE_WIDTH = 600;
 const TABLE_HEIGHT = 900;
-const PLUNGER_X = 550;
-const PLUNGER_MIN_Y = 780;
-const PLUNGER_MAX_Y = 860;
+export const PLUNGER_X = 550;
+export const PLUNGER_MIN_Y = 780;
+export const PLUNGER_MAX_Y = 860;
 
 export class GameState {
   width = TABLE_WIDTH;
@@ -274,7 +274,11 @@ export class GameState {
     if (!holding && this.plungerCharge > 0) {
       const plungerBall = this.balls.find((ball) => ball.inPlungerLane);
       if (plungerBall) {
-        plungerBall.velocity.y -= this.plungerCharge;
+        const launchPower = this.plungerCharge;
+        const lateralKick = clamp(launchPower * 0.12, 60, 160);
+        plungerBall.velocity.y -= launchPower;
+        plungerBall.velocity.x = -lateralKick;
+        plungerBall.position.x = PLUNGER_X - 8;
         plungerBall.inPlungerLane = false;
       }
       this.plungerCharge = 0;

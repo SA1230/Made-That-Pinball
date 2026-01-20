@@ -1,4 +1,4 @@
-import { GameState } from "../state";
+import { GameState, PLUNGER_MAX_Y, PLUNGER_MIN_Y, PLUNGER_X } from "../state";
 import { lerp } from "../physics/vector";
 
 export type RenderInfo = {
@@ -24,6 +24,7 @@ export const renderGame = (
   drawTable(ctx, state);
   drawRamp(ctx, state);
   drawWalls(ctx, state);
+  drawPlunger(ctx, state);
   drawSlings(ctx, state);
   drawTargets(ctx, state);
   drawBumpers(ctx, state);
@@ -70,6 +71,31 @@ const drawWalls = (ctx: CanvasRenderingContext2D, state: GameState) => {
     ctx.stroke();
   }
   ctx.shadowBlur = 0;
+};
+
+const drawPlunger = (ctx: CanvasRenderingContext2D, state: GameState) => {
+  const pullRatio = state.maxPlungerCharge === 0 ? 0 : state.plungerCharge / state.maxPlungerCharge;
+  const handleTravel = 50;
+  const plungerX = PLUNGER_X + 16;
+  const rodTop = PLUNGER_MIN_Y - 30;
+  const handleY = PLUNGER_MAX_Y + 12 + pullRatio * handleTravel;
+  const rodBottom = handleY - 14;
+
+  ctx.strokeStyle = "rgba(200,230,255,0.6)";
+  ctx.lineWidth = 6;
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(plungerX, rodTop);
+  ctx.lineTo(plungerX, rodBottom);
+  ctx.stroke();
+
+  ctx.fillStyle = "rgba(220,240,255,0.95)";
+  ctx.beginPath();
+  ctx.arc(plungerX, handleY, 12, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "rgba(120,180,255,0.8)";
+  ctx.lineWidth = 3;
+  ctx.stroke();
 };
 
 const drawBumpers = (ctx: CanvasRenderingContext2D, state: GameState) => {
